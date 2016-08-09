@@ -121,7 +121,9 @@ class Export
      */
     public function exportEntries($userId,$year, $month, array $arSort = null)
     {
+
         $entriesRequireAdditionalInformation = $this->getEntriesRequireAddInfo($userId, $year, $month);
+
         if (0 < count($entriesRequireAdditionalInformation)) {
             $this->extractTicketSystems($entriesRequireAdditionalInformation);
             $this->fetchAdditionalInfoFromExternalJira();
@@ -394,7 +396,6 @@ class Export
                 );
             }
         }
-
         return $arEntries;
     }
 }

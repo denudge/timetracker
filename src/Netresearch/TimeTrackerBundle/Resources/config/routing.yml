@@ -131,6 +131,11 @@ _controllingExport:
     defaults: { _controller: NetresearchTimeTrackerBundle:Controlling:export, userid:0, year:0, month: 0 }
     requirements: { year: \d+, userid: \d+}
 
+_controllingJsonExport:
+    pattern: /controlling/exportJson
+    defaults: { _controller: NetresearchTimeTrackerBundle:Controlling:exportJson}
+
+
 check_status:
     pattern: /status/check
     defaults: { _controller: NetresearchTimeTrackerBundle:Status:check }

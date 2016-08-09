@@ -76,10 +76,56 @@ class ControllingController extends BaseController
             . str_replace(' ', '-', $username)
             . '.csv'
         );
-
         $response = new Response();
         $response->headers->set('Content-Type', 'text/csv; charset=utf-8');
         $response->headers->set('Content-disposition', 'attachment;filename=' . $filename);
+        $response->setContent(chr(239) . chr(187) . chr(191) . $content);
+        exit;
+        return $response;
+    }
+
+    /**
+     * Exports a users timetable from one specific year and month
+     *
+     * @return Response
+     */
+    public function exportJsonAction()
+    {
+/*        if (!$this->checkLogin()) {
+            return $this->getFailedLoginResponse();
+        }*/
+
+
+        $service = $this->get('nr.timetracker.export');
+        $entries = $service->exportEntries(
+            0, 2016, 8, array(
+                'user.username'  => true,
+                'entry.day'   => true,
+                'entry.start' => true,
+            )
+        );
+        $arJson = array();
+        foreach ($entries as $entry) {
+            $arJson[] = array(
+                'date' => array(
+                    'date'  => $entry->getDay()->format("d.m.Y"),
+                    'start' => $entry->getStart()->format("H:i"),
+                    'end'   => $entry->getEnd()->format("H:i"),
+                ),
+                'customer' => $entry->getCustomer(),
+                'project' =>  $entry->getProject(),
+                'activity' => $entry->getActivity(),
+            );
+        }
+        $content = $this->get('templating')->render(
+            'NetresearchTimeTrackerBundle:Default:export.json.twig',
+            array(
+                'entries' => $arJson,
+            )
+        );
+
+        $response = new Response();
+        $response->headers->set('Content-Type', 'text/json; charset=utf-8');
         $response->setContent(chr(239) . chr(187) . chr(191) . $content);
 
         return $response;
